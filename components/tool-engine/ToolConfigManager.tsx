@@ -19,14 +19,14 @@ export function ToolConfigManager({ config, updateConfig, onGenerate }: ToolConf
   const { t } = useI18n();
 
   return (
-    <Card className="w-full bg-card/50 backdrop-blur border-border/50 shadow-sm rounded-lg xl:sticky xl:top-8 xl:h-[calc(100vh-4rem)] xl:overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-      <CardContent className="p-2 xl:px-4 xl:py-2">
-        <div className="flex flex-row xl:flex-col items-center xl:items-stretch gap-4 xl:gap-5 overflow-x-auto justify-between w-full" style={{ scrollbarWidth: 'none' }}>
+    <Card className="w-full bg-card/50 backdrop-blur border-border/50 shadow-sm rounded-none">
+      <CardContent className="p-3 xl:px-4 xl:py-4">
+        <div className="flex flex-wrap xl:flex-col items-center xl:items-stretch gap-x-4 gap-y-6 xl:gap-5 justify-between w-full border-none">
           
           {/* Operator Selection */}
-          <div className="flex items-center shrink-0 xl:w-full">
+          <div className="flex items-center w-full shrink-0">
             <Select value={config.type} onValueChange={(v: any) => updateConfig({ type: v })}>
-               <SelectTrigger className="w-[170px] xl:w-full h-10 border-primary/20 bg-primary/5 text-primary font-bold xl:text-lg hover:bg-primary/10 transition-colors shadow-sm font-heading capitalize rounded-none"><SelectValue /></SelectTrigger>
+               <SelectTrigger className="w-full h-12 border-primary/20 bg-primary/5 text-primary font-bold text-lg hover:bg-primary/10 transition-colors shadow-sm font-heading capitalize rounded-none"><SelectValue /></SelectTrigger>
                <SelectContent className="capitalize">
                  <SelectItem value="addition">{t("config.addition")}</SelectItem>
                  <SelectItem value="subtraction">{t("config.subtraction")}</SelectItem>
@@ -55,15 +55,15 @@ export function ToolConfigManager({ config, updateConfig, onGenerate }: ToolConf
                 ><GripHorizontal className="w-4 h-4" /></Button>
              </div>
 
-             <Button onClick={onGenerate} variant="default" size="icon" className="shrink-0 shadow-sm h-10 w-10 transition-all hover:rotate-180 active:scale-95" title="Re-roll">
+             <Button onClick={onGenerate} variant="default" size="icon" className="hidden xl:flex shrink-0 shadow-sm h-10 w-10 transition-all hover:rotate-180 active:scale-95" title="Re-roll">
                <RefreshCcw className="w-5 h-5" />
              </Button>
           </div>
 
           {/* Digits Dropdown */}
-          <div className="relative shrink-0 xl:w-full mt-1">
-            <Label className="absolute -top-2 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">
-               {config.type === "multiplication" ? t("config.top_digits") : config.type === "division" ? t("config.dividend_max") : t("config.digits")}
+          <div className="relative shrink-0 xl:w-full mt-2">
+            <Label className="absolute -translate-y-1/2 top-0 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">
+               {config.type === "multiplication" || config.type === "subtraction" ? t("config.top_digits") : config.type === "division" ? t("config.dividend_max") : t("config.digits")}
             </Label>
             <Select value={config.digits.toString()} onValueChange={(v) => updateConfig({ digits: Number(v) })}>
               <SelectTrigger className="w-[80px] xl:w-full h-10 rounded-none"><SelectValue /></SelectTrigger>
@@ -73,10 +73,10 @@ export function ToolConfigManager({ config, updateConfig, onGenerate }: ToolConf
             </Select>
           </div>
 
-          {/* Stack Dropdown */}
-          {config.type !== "subtraction" && (
-            <div className="relative shrink-0 xl:w-full mt-1">
-              <Label className="absolute -top-2 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">
+          {/* Stack / Bottom Digits Dropdown */}
+          {config.type !== "subtraction" ? (
+            <div className="relative shrink-0 xl:w-full mt-2">
+              <Label className="absolute -translate-y-1/2 top-0 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">
                 {config.type === "multiplication" ? t("config.bot_digits") : config.type === "division" ? t("config.divisor_size") : t("config.stack")}
               </Label>
               <Select value={config.columns.toString()} onValueChange={(v) => updateConfig({ columns: Number(v) })}>
@@ -86,11 +86,23 @@ export function ToolConfigManager({ config, updateConfig, onGenerate }: ToolConf
                 </SelectContent>
               </Select>
             </div>
+          ) : (
+            <div className="relative shrink-0 xl:w-full mt-2">
+              <Label className="absolute -translate-y-1/2 top-0 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">
+                {t("config.bot_digits")}
+              </Label>
+              <Select value={(config.bottomDigits || 1).toString()} onValueChange={(v) => updateConfig({ bottomDigits: Number(v) })}>
+                <SelectTrigger className="w-[80px] xl:w-full h-10 rounded-none"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
           )}
 
           {/* Count Dropdown */}
-          <div className="relative shrink-0 xl:w-full mt-1">
-            <Label className="absolute -top-2 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">{t("config.count")}</Label>
+          <div className="relative shrink-0 xl:w-full mt-2">
+            <Label className="absolute -translate-y-1/2 top-0 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">{t("config.count")}</Label>
             <Select value={config.count.toString()} onValueChange={(v) => updateConfig({ count: Number(v) })}>
               <SelectTrigger className="w-[70px] xl:w-full h-10 rounded-none"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -101,8 +113,8 @@ export function ToolConfigManager({ config, updateConfig, onGenerate }: ToolConf
 
           {/* Carry Filter Dropdown */}
           {config.type !== "division" && (
-            <div className="relative shrink-0 xl:w-full mt-1">
-              <Label className="absolute -top-2 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">{t("config.carry_rule")}</Label>
+            <div className="relative shrink-0 xl:w-full mt-2">
+              <Label className="absolute -translate-y-1/2 top-0 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">{t("config.carry_rule")}</Label>
               <Select value={config.carryMode} onValueChange={(v: any) => updateConfig({ carryMode: v })}>
                 <SelectTrigger className="w-[120px] xl:w-full h-10 text-xs rounded-none"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -115,8 +127,8 @@ export function ToolConfigManager({ config, updateConfig, onGenerate }: ToolConf
           )}
 
           {/* Cards Per Row Dropdown */}
-          <div className="relative shrink-0 xl:w-full mt-1">
-            <Label className="absolute -top-2 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">{t("config.grid")}</Label>
+          <div className="relative shrink-0 xl:w-full mt-2">
+            <Label className="absolute -translate-y-1/2 top-0 left-2 z-10 bg-card px-1 whitespace-nowrap uppercase text-[10px] font-bold text-muted-foreground leading-none">{t("config.grid")}</Label>
             <Select value={config.cardsPerRow?.toString() || "auto"} onValueChange={(v) => updateConfig({ cardsPerRow: v === "auto" ? "auto" : Number(v) })}>
               <SelectTrigger className="w-[80px] xl:w-full h-10 rounded-none"><SelectValue /></SelectTrigger>
               <SelectContent>

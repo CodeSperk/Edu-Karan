@@ -23,12 +23,12 @@ export default function LandingPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full px-4">
         {subjects.map((subject, i) => (
           <Link key={subject.id} href={`/${subject.id}`}>
-            <Card className={`relative overflow-hidden h-full group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-4 hover:scale-[1.02] border-2 border-muted/50 hover:border-primary/30 rounded-[2rem] animate-in fade-in slide-in-from-bottom-8`} style={{ animationDelay: `${i * 150}ms` }}>
+            <Card className={`relative overflow-hidden h-full group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-4 hover:scale-[1.02] border-2 border-muted/50 hover:border-primary/30 rounded-none animate-in fade-in slide-in-from-bottom-8`} style={{ animationDelay: `${i * 150}ms` }}>
               {/* Interactive background shine */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 pointer-events-none bg-gradient-to-br from-primary via-transparent to-transparent transition-opacity duration-700" />
               
               <CardContent className="relative flex flex-col items-center text-center p-8 lg:p-12 space-y-6 z-10">
-                <div className={`p-6 rounded-3xl ${subject.bg} ${subject.color} group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 shadow-sm group-hover:shadow-md`}>
+                <div className={`p-6 rounded-none ${subject.bg} ${subject.color} group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 shadow-sm group-hover:shadow-md`}>
                   <subject.icon className="w-12 h-12" />
                 </div>
                 <div className="space-y-2">

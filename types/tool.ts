@@ -19,4 +19,5 @@ export interface MathToolConfig extends ToolConfig {
   count: number;
   carryMode: CarryMode;
   cardsPerRow?: number | "auto";
+  bottomDigits?: number;
 }

@@ -74,42 +74,51 @@ export function generateMathProblems(config: MathToolConfig): MathProblem[] {
 
     } else if (config.type === "subtraction") {
       let top = 0, bottom = 0;
+      const bDigits = config.bottomDigits || 1;
+      const tMin = config.digits === 1 ? 0 : Math.pow(10, config.digits - 1);
+      const tMax = Math.pow(10, config.digits) - 1;
+      const bMin = bDigits === 1 ? 0 : Math.pow(10, bDigits - 1);
+      const bMax = Math.pow(10, bDigits) - 1;
+
       if (config.carryMode === "without-carry") {
-        let tStr = "", bStr = "";
-        for (let d = 0; d < config.digits; d++) {
-          const isMSD = (d === 0);
-          const minT = isMSD && config.digits > 1 ? 1 : 0;
-          const tDig = Math.floor(Math.random() * (9 - minT + 1)) + minT;
-          const minB = isMSD && config.digits > 1 ? 1 : 0;
-          const bDig = Math.floor(Math.random() * (tDig - minB + 1)) + minB;
-          tStr += tDig;
-          bStr += bDig;
+        let attempt = 0;
+        while (attempt < 200) {
+           attempt++;
+           top = Math.floor(Math.random() * (tMax - tMin + 1)) + tMin;
+           bottom = Math.floor(Math.random() * (bMax - bMin + 1)) + bMin;
+           
+           let hasBorrow = false;
+           const maxLen = Math.max(top.toString().length, bottom.toString().length);
+           const tArr = top.toString().padStart(maxLen, '0').split('').map(Number);
+           const bArr = bottom.toString().padStart(maxLen, '0').split('').map(Number);
+           
+           for (let k = maxLen - 1; k >= 0; k--) {
+             if (tArr[k] < bArr[k]) { hasBorrow = true; break; }
+           }
+           if (!hasBorrow) break;
         }
-        top = parseInt(tStr);
-        bottom = parseInt(bStr);
       } else {
         let attempt = 0;
+        let found = false;
         while (attempt < 100) {
           attempt++;
-          const min = config.digits === 1 ? 1 : Math.pow(10, config.digits - 1);
-          const max = Math.pow(10, config.digits) - 1;
-          const a = Math.floor(Math.random() * (max - min + 1)) + min;
-          const b = Math.floor(Math.random() * (max - min + 1)) + min;
-          top = Math.max(a, b);
-          bottom = Math.min(a, b);
+          top = Math.floor(Math.random() * (tMax - tMin + 1)) + tMin;
+          bottom = Math.floor(Math.random() * (bMax - bMin + 1)) + bMin;
           
-          if (config.carryMode === "any" || config.digits === 1) break;
+          if (config.carryMode === "any") { found = true; break; }
 
           let hasBorrow = false;
-          let tArray = top.toString().padStart(config.digits, '0').split('').map(Number);
-          let bArray = bottom.toString().padStart(config.digits, '0').split('').map(Number);
-          for (let k = config.digits - 1; k >= 0; k--) {
-            if (tArray[k] < bArray[k]) {
-              hasBorrow = true;
-              break;
-            }
+          const maxLen = Math.max(top.toString().length, bottom.toString().length);
+          const tArr = top.toString().padStart(maxLen, '0').split('').map(Number);
+          const bArr = bottom.toString().padStart(maxLen, '0').split('').map(Number);
+          for (let k = maxLen - 1; k >= 0; k--) {
+            if (tArr[k] < bArr[k]) { hasBorrow = true; break; }
           }
-          if (hasBorrow && config.carryMode === "with-carry") break;
+          if (hasBorrow && config.carryMode === "with-carry") { found = true; break; }
+        }
+        if (!found) {
+           top = Math.floor(Math.random() * (tMax - tMin + 1)) + tMin;
+           bottom = Math.floor(Math.random() * (bMax - bMin + 1)) + bMin;
         }
       }
       numbers.push(top, bottom);
