@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Header } from "@/components/shared/Header";
+import { Footer } from "@/components/shared/Footer";
+import { I18nProvider } from "@/contexts/I18nContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,8 +31,26 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <I18nProvider>
+            <TooltipProvider>
+              <Header />
+              <main className="flex-1 container mx-auto px-4 py-2 md:py-4 flex flex-col min-h-0">
+                {children}
+              </main>
+              <Footer />
+            </TooltipProvider>
+          </I18nProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
